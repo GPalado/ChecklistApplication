@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Edit Checklist</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <form (ngSubmit)="update()">
+      <ion-item>
+        <ion-label>Title: </ion-label>
+        <ion-input type="text" required [(ngModel)]="checklistInfo.title" name="title"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Description: </ion-label>
+        <!-- todo limit chars -->
+        <ion-input type="text" required [(ngModel)]="checklistInfo.description" name="description"></ion-input>
+      </ion-item>
+      
+      <ion-list>
+        <ion-label>Labels:</ion-label>
+        <ion-item>
+          <ion-label>All</ion-label>
+          <ion-checkbox [(ngModel)]="all"></ion-checkbox>
+        </ion-item>
+        <ion-item>
+          <ion-label>Flagged</ion-label>
+          <ion-checkbox [(ngModel)]="flagged"></ion-checkbox>
+        </ion-item>
+      </ion-list>
+      <button ion-button block type="submit">Enter</button>
+    </form>
+</ion-content>

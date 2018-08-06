@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Checklist Name</ion-title>
+    <ion-buttons right>
+      <button ion-button icon-only (click)="editChecklist()">
+        <ion-icon name="create"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-buttons right>
+      <button ion-button icon-only (click)="deleteChecklist()">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <div class="item">
+      <ion-item>
+        <ion-label>List Item</ion-label>
+        <ion-checkbox [(ngModel)]="item1"></ion-checkbox>
+      </ion-item>
+      <ion-buttons right>
+        <!-- todo fix button within list -->
+        <button ion-button icon-only class="editButton" (click)="viewItem()">
+          <ion-icon name="create"></ion-icon>
+        </button>
+      </ion-buttons>
+    </div>
+  </ion-list>
+  <ion-buttons right>
+    <button ion-button (click)="addNewItem()">
+      <ion-icon name="add"> Add New Item</ion-icon>
+    </button>
+  </ion-buttons>
+</ion-content>

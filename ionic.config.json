@@ -1,0 +1,7 @@
+{
+  "name": "ChecklistApp",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

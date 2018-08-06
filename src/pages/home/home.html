@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons left>
+      <button ion-button icon-only (click)="goToSettings()">
+        <ion-icon name="settings"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>Checklists</ion-title>
+    <ion-buttons right>
+      <button ion-button icon-only (click)="goToNewChecklist()">
+        <ion-icon name="add-circle"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <!-- Todo: display checklists -->
+  <ion-card (click)="goToChecklist()">
+    <ion-card-header>
+      Example Checklist Title
+    </ion-card-header>
+    <ion-card-content>
+      Example Description
+    </ion-card-content>
+  </ion-card>
+</ion-content>

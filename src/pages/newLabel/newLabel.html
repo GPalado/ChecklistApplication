@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>New Label</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <form (ngSubmit)="save()">
+        <ion-item>
+          <ion-label>Name: </ion-label>
+          <!-- todo limit chars -->
+          <ion-input type="text" required [(ngModel)]="labelInfo.name" name="name"></ion-input>
+        </ion-item>
+        <!-- todo colour selection -->
+        <button ion-button block type="submit">Enter</button>
+      </form>
+</ion-content>

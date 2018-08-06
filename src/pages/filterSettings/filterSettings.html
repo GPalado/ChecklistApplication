@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Filter Settings</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form (ngSubmit)="updateFilters()">
+    <ion-item>
+      <!-- todo use for each and pull filter list from db -->
+      <ion-label>All</ion-label>
+      <ion-checkbox [(ngModel)]="filter.all" name="all" (ionChange)="updateAll()"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>Flagged</ion-label>
+      <ion-checkbox [(ngModel)]="filter.flagged" name="flagged"></ion-checkbox>
+    </ion-item>
+    <ion-buttons>
+      <button ion-button (click)="addNewLabel()">
+        <ion-icon name="add"> Add New Label</ion-icon>
+      </button>
+    </ion-buttons>
+    <button ion-button type="submit" block>Save</button>
+  </form>
+</ion-content>
