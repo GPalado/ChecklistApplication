@@ -8,17 +8,17 @@
 </ion-header>
 
 <ion-content>
-    <form (ngSubmit)="save()">
-        <ion-item>
-          <ion-label>Title: </ion-label>
-          <ion-input type="text" required [(ngModel)]="checklistInfo.title" name="title"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label>Description: </ion-label>
-          <!-- todo limit chars -->
-          <ion-input type="text" required [(ngModel)]="checklistInfo.description" name="description"></ion-input>
-        </ion-item>
-        <!-- todo labels -->
-        <button ion-button block type="submit">Enter</button>
-      </form>
+    <form [formGroup]="formControl" (ngSubmit)="save()">
+      <ion-item>
+        <ion-label>Name: </ion-label>
+        <ion-input type="text" maxlength="{{maxNameChars}}" formControlName="name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Description: </ion-label>
+        <!-- todo limit chars -->
+        <ion-input type="text" maxlength="{{maxDescripChars}}" formControlName="description"></ion-input>
+      </ion-item>
+      <!-- todo labels -->
+      <button ion-button block type="submit">Enter</button>
+    </form>
 </ion-content>

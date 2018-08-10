@@ -10,12 +10,10 @@
 <ion-content padding>
   <ion-list>
     <ion-item>
-      <ion-label>Layout: tiles/list</ion-label>
-      <ion-toggle (ionChange)="layoutChange()" [(ngModel)]="layout"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label>Theme: light/dark</ion-label>
-      <ion-toggle (ionChange)="themeChange()" [(ngModel)]="theme"></ion-toggle>
+      <ion-label>Theme:</ion-label>
+      <ion-select [(ngModel)]="theme">
+        <ion-option *ngFor="let opt of themeOptions | async" value="{{opt}}" [selected]="currentTheme==opt" (ionChange)="themeChange()">{{ opt }}</ion-option>
+      </ion-select>
     </ion-item>
   </ion-list>
 </ion-content>
