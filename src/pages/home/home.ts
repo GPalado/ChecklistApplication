@@ -4,6 +4,7 @@ import { SettingsPage } from '../settings/settings';
 import { NewChecklistPage } from '../newChecklist/newChecklist';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from '../../../node_modules/rxjs';
+import { ChecklistPage } from '../checklist/checklist';
 
 @Component({
   selector: 'page-home',
@@ -27,7 +28,9 @@ export class HomePage {
     this.navCtrl.push(NewChecklistPage);
   }
 
-  goToChecklist() {
-    // this.navCtrl.push(ChecklistPage);
+  goToChecklist(checklistKey) {
+    this.navCtrl.push(ChecklistPage, {
+      key: checklistKey
+    });
   }
 }

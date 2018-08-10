@@ -23,7 +23,7 @@ export class NewChecklistPage {
 
   save() {
     // todo labels
-    var descrip = this.formControl.get('description');
+    var descrip = this.formControl.get('description').value;
     if(descrip===undefined){
       descrip="";
     }

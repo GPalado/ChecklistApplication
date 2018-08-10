@@ -16,7 +16,7 @@
 
 <ion-content padding>
   <ion-list>
-    <li *ngFor="let checklist of checklists | async | keyValue">
+    <li *ngFor="let checklist of checklists | async | keyValue" (click)="goToChecklist(checklist.key)">
       <ion-card id="checklist-card">
         <ion-card-header>{{checklist.value.name}}</ion-card-header>
         <ion-card-content>{{checklist.value.description}}</ion-card-content> 
