@@ -33,6 +33,7 @@ export class ChecklistPage {
   populateIDs() {
     var itemID;
     for(itemID in this.checklistData.itemIDs) {
+      // take 1 here or remain subscribed
       this.database.object('/items/' + itemID).valueChanges().take(1).subscribe( data => {
         this.items.push(data);
         console.log(data);
@@ -60,7 +61,7 @@ export class ChecklistPage {
 
   addNewItem() {
     this.navCtrl.push(NewItemPage, {
-      checklistKey: this.checklistData.key
+      checklistKey: this.navParams.get('key')
     });
   }
 }

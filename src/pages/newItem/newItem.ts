@@ -10,6 +10,7 @@ import {Validators, FormBuilder, FormGroup} from '@angular/forms';
 export class NewItemPage {
   maxChars = 200;
   items: AngularFireList<any>;
+  itemIDs: AngularFireList<any>;
   
   formControl = this.formBuilder.group({
     content: ['', Validators.compose([Validators.maxLength(this.maxChars), Validators.required])]
@@ -17,13 +18,15 @@ export class NewItemPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, database: AngularFireDatabase, public formBuilder: FormBuilder) { 
     this.items = database.list('/items');
+    this.itemIDs = database.list('/checklists/' + this.navParams.get('checklistKey') + '/itemIDs');
+    console.log(this.navParams.get('checklistKey'));
   }
 
   save() {
     const newItemRef = this.items.push({
       content: this.formControl.get('content').value
     });
-    //todo add reference to parent checklist
+    this.itemIDs.push(newItemRef.key);
     this.navCtrl.pop();
   }
   
