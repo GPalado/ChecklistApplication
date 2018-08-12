@@ -13,15 +13,31 @@ import 'rxjs/add/operator/take';
 })
 export class ChecklistPage {
   checklistData;
-  items: object[];
+  itemKVPairs: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase) { 
     var path = '/checklists/' + navParams.get('key');
-    database.object(path).valueChanges().take(1).subscribe( data => {
-      this.checklistData = data;
-      console.log(data);
+    database.object(path).valueChanges().subscribe( clData => {
+      this.checklistData = clData;
+      console.log("Checklist data is " + clData);
+      this.populateItems().subscribe(itemData => {
+        var itemKVs = itemData;
+        console.log("itemData:" + itemKVs);
+        var checklistItemIDObj = this.checklistData.itemIDs;
+        if(checklistItemIDObj !== undefined){
+          var checklistItemIDs = Object.keys(checklistItemIDObj).map(key => checklistItemIDObj[key]);
+          this.itemKVPairs = Object.keys(itemKVs)
+          .filter(key => checklistItemIDs.includes(key))
+          .reduce((obj, key) => {
+            obj[key] = itemKVs[key];
+            return obj;
+          }, {});
+          console.log("filtered: "+ this.itemKVPairs + " has " + Object.keys(this.itemKVPairs).length + " items");
+        } else {
+          console.log("Checklist ItemIDs undefined");
+        }
+      });
       this.populateUI();
-      this.populateIDs();
     });
   }
 
@@ -30,16 +46,8 @@ export class ChecklistPage {
     document.getElementById("description").innerHTML = this.checklistData.description;
   }
 
-  populateIDs() {
-    var itemID;
-    for(itemID in this.checklistData.itemIDs) {
-      // take 1 here or remain subscribed
-      this.database.object('/items/' + itemID).valueChanges().take(1).subscribe( data => {
-        this.items.push(data);
-        console.log(data);
-      });
-    }
-    // todo update cards
+  populateItems() {
+    return this.database.object('/items').valueChanges();
   }
   
   editChecklist() {
@@ -55,7 +63,7 @@ export class ChecklistPage {
 
   viewItem(itemKey) {
     this.navCtrl.push(ItemPage, {
-      key: itemKey
+      itemKey: itemKey
     });
   }
 

@@ -13,5 +13,12 @@
 </ion-header>
 
 <ion-content>
-  [Content]
+  <form [formGroup]="formControl" (ngSubmit)="save()">
+    <ion-item>
+      <ion-label>Content: </ion-label>
+      <ion-input type="text" maxlength="{{maxChars}}" formControlName="content"></ion-input>
+    </ion-item>
+    <!-- todo deadline -->
+    <button ion-button block type="submit">Enter</button>
+  </form>
 </ion-content>

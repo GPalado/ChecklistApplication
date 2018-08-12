@@ -19,8 +19,8 @@
 
 <ion-content>
   <div id="description"></div>
-  <!-- <ion-list>
-    <li *ngFor="let item of items | async | keyValue" >
+  <ion-list>
+    <li *ngFor="let item of itemKVPairs | keyValue" >
       <div class="item">
         <ion-item>
           <ion-label>{{item.value.content}}</ion-label>
@@ -33,7 +33,7 @@
         </ion-buttons>
       </div>
     </li>
-  </ion-list> -->
+  </ion-list>
   <ion-buttons right>
     <button ion-button (click)="addNewItem()">
       <ion-icon name="add"> Add New Item</ion-icon>
