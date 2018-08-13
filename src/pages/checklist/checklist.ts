@@ -14,13 +14,16 @@ import 'rxjs/add/operator/take';
 export class ChecklistPage {
   checklistData;
   itemKVPairs: any;
+  checklistSubscription;
+  itemsSubscription;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase) { 
     var path = '/checklists/' + navParams.get('key');
-    database.object(path).valueChanges().subscribe( clData => {
+    this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
       this.checklistData = clData;
       console.log("Checklist data is " + clData);
-      this.populateItems().subscribe(itemData => {
+      // todo populate KV pairs via checklist rather than via items
+      this.itemsSubscription = this.populateItems().subscribe(itemData => {
         var itemKVs = itemData;
         console.log("itemData:" + itemKVs);
         var checklistItemIDObj = this.checklistData.itemIDs;
@@ -52,18 +55,27 @@ export class ChecklistPage {
   
   editChecklist() {
     this.navCtrl.push(EditChecklistPage, {
-      key: this.navParams.get('key')
+      checklistKey: this.navParams.get('key')
     });
   }
 
   deleteChecklist() {
     // todo alert for check make sure eetc things
+    // todo delete items of this checklist
+    this.checklistSubscription.unsubscribe();
+    this.itemsSubscription.unsubscribe();
+    var itemKey;
+    for(itemKey in Object.keys(this.itemKVPairs)){
+      this.database.object('/items/' + this.itemKVPairs[itemKey]).remove();
+    }
+    this.database.object('/checklists/' + this.navParams.get('key')).remove();
     this.navCtrl.pop();
   }
 
   viewItem(itemKey) {
     this.navCtrl.push(ItemPage, {
-      itemKey: itemKey
+      itemKey: itemKey,
+      checklistKey: this.navParams.get('key')
     });
   }
 
