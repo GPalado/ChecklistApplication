@@ -23,9 +23,8 @@ export class ChecklistPage {
       this.checklistData = clData;
       console.log("Checklist data is " + clData);
       // todo populate KV pairs via checklist rather than via items
-      this.itemsSubscription = this.populateItems().subscribe(itemData => {
+      this.itemsSubscription = this.database.object('/items').valueChanges().subscribe(itemData => {
         var itemKVs = itemData;
-        console.log("itemData:" + itemKVs);
         var checklistItemIDObj = this.checklistData.itemIDs;
         if(checklistItemIDObj !== undefined){
           var checklistItemIDs = Object.keys(checklistItemIDObj).map(key => checklistItemIDObj[key]);
@@ -35,7 +34,8 @@ export class ChecklistPage {
             obj[key] = itemKVs[key];
             return obj;
           }, {});
-          console.log("filtered: "+ this.itemKVPairs + " has " + Object.keys(this.itemKVPairs).length + " items");
+          console.log("Filtered: ", this.itemKVPairs);
+          console.log("Has " + Object.keys(this.itemKVPairs).length + " items");
         } else {
           console.log("Checklist ItemIDs undefined");
         }
@@ -47,10 +47,6 @@ export class ChecklistPage {
   populateUI() {
     document.getElementById("title").innerHTML = this.checklistData.name;
     document.getElementById("description").innerHTML = this.checklistData.description;
-  }
-
-  populateItems() {
-    return this.database.object('/items').valueChanges();
   }
   
   editChecklist() {
@@ -64,10 +60,11 @@ export class ChecklistPage {
     // todo delete items of this checklist
     this.checklistSubscription.unsubscribe();
     this.itemsSubscription.unsubscribe();
-    var itemKey;
-    for(itemKey in Object.keys(this.itemKVPairs)){
-      this.database.object('/items/' + this.itemKVPairs[itemKey]).remove();
-    }
+    Object.keys(this.itemKVPairs).forEach( key => {
+      console.log('Deleting ', this.itemKVPairs[key]);
+      this.database.object('/items/' + key).remove();
+    });
+    console.log('Deleting checklist' + this.navParams.get('key'));
     this.database.object('/checklists/' + this.navParams.get('key')).remove();
     this.navCtrl.pop();
   }
