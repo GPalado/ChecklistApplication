@@ -7,7 +7,6 @@ import { HomePage } from '../pages/home/home';
 import { SettingsPage } from '../pages/settings/settings';
 import { DisplaySettingsPage } from '../pages/displaySettings/displaySettings';
 import { FilterSettingsPage } from '../pages/filterSettings/filterSettings';
-import { NotificationSettingsPage } from '../pages/notificationSettings/notificationSettings';
 import { NewChecklistPage } from '../pages/newChecklist/newChecklist';
 import { ChecklistPage } from '../pages/checklist/checklist';
 import { EditChecklistPage } from '../pages/editChecklist/editChecklist';
@@ -33,7 +32,6 @@ export class MyApp {
       { title: 'Home', component: HomePage },
       { title: 'Settings', component: SettingsPage },
       { title: 'Display Settings', component: DisplaySettingsPage },
-      { title: 'Notification Settings', component: NotificationSettingsPage },
       { title: 'Filter Settings', component: FilterSettingsPage },
       { title: 'New Checklist', component: NewChecklistPage },
       { title: 'Checklist', component: ChecklistPage },

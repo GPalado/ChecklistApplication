@@ -7,7 +7,6 @@ import { HomePage } from '../pages/home/home';
 import { SettingsPage } from '../pages/settings/settings';
 import { DisplaySettingsPage } from '../pages/displaySettings/displaySettings';
 import { FilterSettingsPage } from '../pages/filterSettings/filterSettings';
-import { NotificationSettingsPage } from '../pages/notificationSettings/notificationSettings';
 import { PipesModule } from '../pipes/pipes.module';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -38,7 +37,6 @@ export const firebaseConfig = {
     SettingsPage,
     DisplaySettingsPage,
     FilterSettingsPage,
-    NotificationSettingsPage,
     NewChecklistPage,
     ChecklistPage,
     EditChecklistPage,
@@ -61,7 +59,6 @@ export const firebaseConfig = {
     SettingsPage,
     DisplaySettingsPage,
     FilterSettingsPage,
-    NotificationSettingsPage,
     NewChecklistPage,
     ChecklistPage,
     EditChecklistPage,
