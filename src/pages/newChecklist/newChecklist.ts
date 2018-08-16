@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
-import {Validators, FormBuilder, FormGroup} from '@angular/forms';
+import {Validators, FormBuilder} from '@angular/forms';
 import { ChooseLabelsPage } from '../chooseLabels/chooseLabels';
 
 @Component({
@@ -12,6 +12,7 @@ export class NewChecklistPage {
   maxNameChars = 20;
   maxDescripChars = 60;
   checklists: AngularFireList<any>;
+  labels: any;
   
   formControl = this.formBuilder.group({
     name: ['', Validators.compose([Validators.maxLength(this.maxNameChars), Validators.required])],
@@ -24,7 +25,18 @@ export class NewChecklistPage {
 
   addLabels() {
     console.log('Add labels');
-    this.navCtrl.push(ChooseLabelsPage);
+    var getLabels = data =>
+      {
+        return new Promise((resolve, reject) => {
+          this.labels = data;
+          resolve();
+        });
+      };
+    this.navCtrl.push(ChooseLabelsPage,
+      {
+          labels: this.labels,
+          callback: getLabels
+      });
   }
 
   save() {
@@ -36,8 +48,15 @@ export class NewChecklistPage {
       name: this.formControl.get('name').value,
       description: descrip
     });
-    // this.checklistLabels = this.database.list('/checklists/' + newChecklistRef.key + '/labels');
-    console.log('Save checklist ', newChecklistRef.key);
+    var checklistLabels : AngularFireList<any> = this.database.list('/checklists/' + newChecklistRef.key + '/labels');
+    var key;
+    for(key in Object.keys(this.labels)) {
+      checklistLabels.push(this.labels[key].key);
+      var labelChecklists : AngularFireList<any> = this.database.list('/labels/' + this.labels[key].key + '/checklists');
+      labelChecklists.push(newChecklistRef.key);
+    }
+    
+    console.log('Save checklist ', newChecklistRef);
     this.navCtrl.pop();
   }
   
