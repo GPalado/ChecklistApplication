@@ -7,7 +7,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
     <form [formGroup]="formControl" (ngSubmit)="save()">
       <ion-item>
         <ion-label>Name: </ion-label>
@@ -17,7 +17,27 @@
         <ion-label>Description: </ion-label>
         <ion-input type="text" maxlength="{{maxDescripChars}}" formControlName="description"></ion-input>
       </ion-item>
-      <!-- todo labels -->
-      <button ion-button block type="submit">Enter</button>
+      <!-- <ion-item>
+        <ion-label>Labels: </ion-label>
+        <ion-list>
+          <li *ngFor="let label of labels | async| keyValue" >
+            <div class="label">
+              <ion-item>
+                <ion-label>{{label.value.name}}</ion-label>
+                <ion-checkbox [(ngModel)]="label.key" (click)="checkboxClicked(label.key)"></ion-checkbox>
+              </ion-item>
+            </div>
+          </li>
+        </ion-list>
+      </ion-item>
+      <ion-item>
+        <ion-buttons>
+          <button ion-button (click)="addNewLabel()">
+            <ion-icon name="add"> Add New Label</ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-item> -->
+      <button ion-button block type="submit">Save</button>
     </form>
+    <button ion-button block (click)="addLabels()">Add Labels</button>
 </ion-content>

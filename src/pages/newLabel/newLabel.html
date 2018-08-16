@@ -7,14 +7,16 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
-    <form (ngSubmit)="save()">
-        <ion-item>
-          <ion-label>Name: </ion-label>
-          <!-- todo limit chars -->
-          <ion-input type="text" required [(ngModel)]="labelInfo.name" name="name"></ion-input>
-        </ion-item>
-        <!-- todo colour selection -->
-        <button ion-button block type="submit">Enter</button>
-      </form>
+<ion-content padding>
+  <form [formGroup]="formControl" (ngSubmit)="save()">
+    <ion-item>
+      <ion-label>Name: </ion-label>
+      <ion-input type="text" required maxlength="{{maxChars}}" formControlName="name"></ion-input>
+    </ion-item>
+    <!-- <ion-item>
+      <ion-label>Colour: </ion-label>
+      <input [(colorPicker)]="color" [style.background]="color"/>
+    </ion-item>  -->
+    <button ion-button block type="submit">Enter</button>
+  </form>
 </ion-content>

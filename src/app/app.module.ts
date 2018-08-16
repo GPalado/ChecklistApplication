@@ -20,6 +20,8 @@ import { FormsModule } from '@angular/forms';
 import { NewLabelPage } from '../pages/newLabel/newLabel';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { ColorPickerModule } from 'ngx-color-picker';
+import { ChooseLabelsPage } from '../pages/chooseLabels/chooseLabels';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyCF6-lsSi-f099PFBUeSwajRbrU667qE7M",
@@ -42,7 +44,8 @@ export const firebaseConfig = {
     EditChecklistPage,
     ItemPage,
     NewItemPage,
-    NewLabelPage
+    NewLabelPage,
+    ChooseLabelsPage
   ],
   imports: [
     BrowserModule,
@@ -50,7 +53,8 @@ export const firebaseConfig = {
     FormsModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
-    PipesModule
+    PipesModule,
+    ColorPickerModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -64,7 +68,8 @@ export const firebaseConfig = {
     EditChecklistPage,
     ItemPage,
     NewItemPage,
-    NewLabelPage
+    NewLabelPage,
+    ChooseLabelsPage
   ],
   providers: [
     StatusBar,

@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-navbar>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+      <ion-title>Choose Labels</ion-title>
+    </ion-navbar>
+  </ion-header>
+
+<ion-content padding>
+  <form *ngIf="formControl !== undefined" [formGroup]="formControl" (ngSubmit)="submit()">
+    <ion-label formArrayName="labels" *ngFor="let label of labels; let i = index">
+      <ion-checkbox [formControlName]="i"></ion-checkbox>
+      {{label.value.name}}
+    </ion-label>
+    <button ion-button block type="submit">Save</button>
+  </form>
+  <button ion-button block (click)="addNewLabel()">Add New Label</button>
+</ion-content>

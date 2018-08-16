@@ -4,7 +4,6 @@ import { EditChecklistPage } from '../editChecklist/editChecklist';
 import { NewItemPage } from '../newItem/newItem';
 import { ItemPage } from '../item/item';
 import { AngularFireDatabase } from '../../../node_modules/angularfire2/database';
-import { Observable } from '../../../node_modules/rxjs';
 import 'rxjs/add/operator/take';
 
 @Component({
@@ -22,7 +21,7 @@ export class ChecklistPage {
     this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
       this.checklistData = clData;
       console.log("Checklist data is " + clData);
-      // todo populate KV pairs via checklist rather than via items
+      // todo populate KV pairs via checklist rather than via items [optimization]
       this.itemsSubscription = this.database.object('/items').valueChanges().subscribe(itemData => {
         var itemKVs = itemData;
         var checklistItemIDObj = this.checklistData.itemIDs;
@@ -57,7 +56,6 @@ export class ChecklistPage {
 
   deleteChecklist() {
     // todo alert for check make sure eetc things
-    // todo delete items of this checklist
     this.checklistSubscription.unsubscribe();
     this.itemsSubscription.unsubscribe();
     Object.keys(this.itemKVPairs).forEach( key => {

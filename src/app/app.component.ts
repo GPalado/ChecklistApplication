@@ -13,6 +13,7 @@ import { EditChecklistPage } from '../pages/editChecklist/editChecklist';
 import { ItemPage } from '../pages/item/item';
 import { NewItemPage } from '../pages/newItem/newItem';
 import { NewLabelPage } from '../pages/newLabel/newLabel';
+import { ChooseLabelsPage } from '../pages/chooseLabels/chooseLabels';
 
 @Component({
   templateUrl: 'app.html'
@@ -37,6 +38,7 @@ export class MyApp {
       { title: 'Checklist', component: ChecklistPage },
       { title: 'Edit Checklist', component: EditChecklistPage },
       { title: 'Item', component: ItemPage },
+      { title: 'Choose Labels', component: ChooseLabelsPage },
       { title: 'New Item', component: NewItemPage },
       { title: 'New Label', component: NewLabelPage}
     ];
