@@ -13,8 +13,18 @@ import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
 })
 export class HomePage {
   checklists: Observable<any>;
+  labelNames = {};
 
   constructor(public navCtrl: NavController, public database: AngularFireDatabase) {
+    this.database.object('/labels').valueChanges().subscribe( labelData => {
+      Object.keys(labelData).forEach(labelKey =>{
+        this.labelNames[labelKey] = labelData[labelKey];
+      });
+    });
+  }
+
+  public getLabelFor(key) : string {
+    return this.labelNames[key]['name'];
   }
 
   ionViewDidLoad() {

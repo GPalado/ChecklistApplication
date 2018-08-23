@@ -20,6 +20,9 @@
       <ion-card id="checklist-card">
         <ion-card-header>{{checklist.value.name}}</ion-card-header>
         <ion-card-content>{{checklist.value.description}}</ion-card-content> 
+        <ion-item>
+            <ion-badge *ngFor="let labelRef of checklist.value.labels | keyValue">{{this.getLabelFor(labelRef.value)}}</ion-badge>
+        </ion-item>
       </ion-card>
     </li>
   </ion-list>
