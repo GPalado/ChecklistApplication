@@ -3,7 +3,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>New Checklist</ion-title>
+    <ion-title>{{this.pageName}}</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -19,7 +19,7 @@
       </ion-item>
       <button ion-button block type="submit">Save</button>
     </form>
-    <button ion-button block (click)="addLabels()">Add Labels</button>
+    <button ion-button block (click)="addLabels()">Choose Labels</button>
     <ion-list *ngIf="labels !== undefined">
       <ion-label>Labels:</ion-label>
       <ion-item *ngFor="let label of labels">

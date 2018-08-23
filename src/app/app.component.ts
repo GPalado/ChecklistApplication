@@ -7,13 +7,12 @@ import { HomePage } from '../pages/home/home';
 import { SettingsPage } from '../pages/settings/settings';
 import { DisplaySettingsPage } from '../pages/displaySettings/displaySettings';
 import { FilterSettingsPage } from '../pages/filterSettings/filterSettings';
-import { NewChecklistPage } from '../pages/newChecklist/newChecklist';
 import { ChecklistPage } from '../pages/checklist/checklist';
-import { EditChecklistPage } from '../pages/editChecklist/editChecklist';
 import { ItemPage } from '../pages/item/item';
 import { NewItemPage } from '../pages/newItem/newItem';
 import { NewLabelPage } from '../pages/newLabel/newLabel';
 import { ChooseLabelsPage } from '../pages/chooseLabels/chooseLabels';
+import { ModifyChecklistPage } from '../pages/modifyChecklist/modifyChecklist';
 
 @Component({
   templateUrl: 'app.html'
@@ -34,13 +33,12 @@ export class MyApp {
       { title: 'Settings', component: SettingsPage },
       { title: 'Display Settings', component: DisplaySettingsPage },
       { title: 'Filter Settings', component: FilterSettingsPage },
-      { title: 'New Checklist', component: NewChecklistPage },
       { title: 'Checklist', component: ChecklistPage },
-      { title: 'Edit Checklist', component: EditChecklistPage },
       { title: 'Item', component: ItemPage },
       { title: 'Choose Labels', component: ChooseLabelsPage },
       { title: 'New Item', component: NewItemPage },
-      { title: 'New Label', component: NewLabelPage}
+      { title: 'New Label', component: NewLabelPage},
+      { title: 'Modify Checklist', component: ModifyChecklistPage}
     ];
 
   }

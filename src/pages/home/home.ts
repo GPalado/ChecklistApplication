@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { SettingsPage } from '../settings/settings';
-import { NewChecklistPage } from '../newChecklist/newChecklist';
-import { AngularFireDatabase } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable } from '../../../node_modules/rxjs';
 import { ChecklistPage } from '../checklist/checklist';
+import { FormControl } from '../../../node_modules/@angular/forms';
+import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
 
 @Component({
   selector: 'page-home',
@@ -25,7 +26,31 @@ export class HomePage {
   }
 
   addNewChecklist() {
-    this.navCtrl.push(NewChecklistPage);
+    var submit = (formControl: FormControl, cls: AngularFireList<any>, labels: any) => {
+      var descrip = formControl.get('description').value;
+      if(descrip===undefined){
+        descrip="";
+      }
+      const newChecklistRef = cls.push({
+        name: formControl.get('name').value,
+        description: descrip
+      });
+      if(labels !== null && labels !== undefined){
+        var checklistLabels : AngularFireList<any> = this.database.list('/checklists/' + newChecklistRef.key + '/labels');
+        var key;
+        for(key in Object.keys(labels)) {
+          checklistLabels.push(labels[key].key);
+          var labelChecklists : AngularFireList<any> = this.database.list('/labels/' + labels[key].key + '/checklists');
+          labelChecklists.push(newChecklistRef.key);
+        }
+      }
+      console.log('Save checklist ', newChecklistRef);
+    }
+    
+    this.navCtrl.push(ModifyChecklistPage, {
+      pageName: 'New Checklist',
+      submit: (formControl, labels) => submit(formControl, this.database.list('/checklists'), labels)
+    });
   }
 
   goToChecklist(checklistKey) {

@@ -12,22 +12,27 @@ import {FormBuilder, FormGroup, FormControl, FormArray} from '@angular/forms';
 export class ChooseLabelsPage {
   labels: any;
   formControl: FormGroup;
-  callback;
-  existingLabels: any;
+  callback: Function;
+  existingLabels = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public formBuilder: FormBuilder) {
     this.callback = this.navParams.get('callback');
     this.existingLabels = this.navParams.get('labels') || [];
-    
     database.object('/labels').valueChanges().subscribe(data => {
-      this.labels = Object.entries(data).map(([key, value]) => ({key,value}))
-      console.log('labels ', this.labels);
-      if(this.labels !== null){
-        const controls = this.labels.map(c => new FormControl(false));
-        // todo make controls that exist true.
-        this.formControl = this.formBuilder.group({
-          labels: new FormArray(controls)
-        });
+      if(data) {
+        this.labels = Object.entries(data).map(([key, value]) => ({key,value}));
+        console.log('labels ', this.labels);
+        if(this.labels){
+          const controls = this.labels.map(c => new FormControl(false));
+          // todo make controls that exist true.
+          for(let i in controls){
+            console.log('control ', controls[i]);
+            // if(this.existingLabels.includes(data[i].key))
+          }
+          this.formControl = this.formBuilder.group({
+            labels: new FormArray(controls)
+          });
+        }
       }
     });
   }
@@ -43,7 +48,8 @@ export class ChooseLabelsPage {
       .filter(v => v !== null);
 
     console.log('Selected ', selected);
-    this.callback(selected).then( () => { this.navCtrl.pop() });
+    this.callback(selected);
+    this.navCtrl.pop();
   }
 
 }

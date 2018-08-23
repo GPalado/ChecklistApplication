@@ -12,13 +12,12 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
   <form [formGroup]="formControl" (ngSubmit)="save()">
     <ion-item>
       <ion-label>Content: </ion-label>
       <ion-input type="text" maxlength="{{maxChars}}" formControlName="content"></ion-input>
     </ion-item>
-    <!-- todo deadline -->
-    <button ion-button block type="submit">Enter</button>
+    <button ion-button block type="submit">Save</button>
   </form>
 </ion-content>

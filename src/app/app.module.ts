@@ -11,9 +11,7 @@ import { PipesModule } from '../pipes/pipes.module';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { NewChecklistPage } from '../pages/newChecklist/newChecklist';
 import { ChecklistPage } from '../pages/checklist/checklist';
-import { EditChecklistPage } from '../pages/editChecklist/editChecklist';
 import { ItemPage } from '../pages/item/item';
 import { NewItemPage } from '../pages/newItem/newItem';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +20,7 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { ChooseLabelsPage } from '../pages/chooseLabels/chooseLabels';
+import { ModifyChecklistPage } from '../pages/modifyChecklist/modifyChecklist';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyCF6-lsSi-f099PFBUeSwajRbrU667qE7M",
@@ -39,13 +38,12 @@ export const firebaseConfig = {
     SettingsPage,
     DisplaySettingsPage,
     FilterSettingsPage,
-    NewChecklistPage,
     ChecklistPage,
-    EditChecklistPage,
     ItemPage,
     NewItemPage,
     NewLabelPage,
-    ChooseLabelsPage
+    ChooseLabelsPage,
+    ModifyChecklistPage
   ],
   imports: [
     BrowserModule,
@@ -63,13 +61,12 @@ export const firebaseConfig = {
     SettingsPage,
     DisplaySettingsPage,
     FilterSettingsPage,
-    NewChecklistPage,
     ChecklistPage,
-    EditChecklistPage,
     ItemPage,
     NewItemPage,
     NewLabelPage,
-    ChooseLabelsPage
+    ChooseLabelsPage,
+    ModifyChecklistPage
   ],
   providers: [
     StatusBar,

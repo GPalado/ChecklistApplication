@@ -17,14 +17,15 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
-  <div id="description"></div>
+<ion-content padding>
+  <ion-title id="description"></ion-title>
   <ion-list>
     <li *ngFor="let item of itemKVPairs | keyValue" >
       <div class="item">
         <ion-item>
           <ion-label>{{item.value.content}}</ion-label>
-          <ion-checkbox [(ngModel)]="item.key"></ion-checkbox>
+          <ion-checkbox></ion-checkbox>
+          <!-- [(ngModel)]="item.value.checked" above ? -->
         </ion-item>
         <ion-buttons right>
           <button ion-button icon-only class="editButton" (click)="viewItem(item.key)">
