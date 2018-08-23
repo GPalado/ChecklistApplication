@@ -50,7 +50,12 @@ export class ChooseLabelsPage {
       .filter(v => v !== null);
 
     console.log('Selected ', selected);
-    this.callback(selected);
+    let toReturn = {};
+    for(let i in selected){
+      toReturn[i] = selected[i].key;
+    }
+    console.log('returning ', toReturn);
+    this.callback(toReturn);
     this.navCtrl.pop();
   }
 

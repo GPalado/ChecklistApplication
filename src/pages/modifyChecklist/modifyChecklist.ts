@@ -13,7 +13,8 @@ export class ModifyChecklistPage {
   maxNameChars = 20;
   maxDescripChars = 60;
   checklists: AngularFireList<any>;
-  labels: any;
+  labelKeys: any;
+  labels = [];
   formControl = this.formBuilder.group({
     name: ['', Validators.compose([Validators.maxLength(this.maxNameChars), Validators.required])],
     description: ['', Validators.compose([Validators.maxLength(this.maxDescripChars)])]
@@ -28,28 +29,41 @@ export class ModifyChecklistPage {
     this.submit = navParams.get('submit');
     var existingInfo = navParams.get('existingInfo');
     if(existingInfo !== undefined) {
-      console.log('Existing ', existingInfo);
       this.formControl.controls['name'].setValue(existingInfo['name']);
       this.formControl.controls['description'].setValue(existingInfo['description']);
     }
     var existingLabels = navParams.get('existingLabels');
-    if(existingLabels){
-      this.labels = existingLabels;
+    console.log('existing labels', existingLabels);
+    this.updateLabels(existingLabels);
+  }
+
+  updateLabels(labelData){
+    console.log('label data', labelData);
+    if(labelData){
+      this.labelKeys = labelData;
+      this.labels = [];
+      Object.keys(labelData).map(key => labelData[key]).forEach (labelKey => {
+        this.database.object('/labels/' + labelKey).valueChanges().take(1).subscribe(labelData => {
+          this.labels.push(labelData);
+        });
+      });
+      console.log('labels', this.labels);
     }
   }
 
   addLabels() {
     var getLabels = (data) => {
-      this.labels = data;
+      this.updateLabels(data);
     };
     this.navCtrl.push(ChooseLabelsPage, {
-        existingLabels: this.labels,
-        callback: getLabels
+        existingLabels: this.labelKeys,
+        callback: getLabels,
+        checklistKey: this.navParams.get('checklistKey')
     });
   }
 
   save() {
-    this.submit(this.formControl, this.labels);
+    this.submit(this.formControl, this.labelKeys);
     this.navCtrl.pop();
   }
 }

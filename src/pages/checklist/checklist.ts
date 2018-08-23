@@ -83,16 +83,16 @@ export class ChecklistPage {
 
   updateLabels(labels: any) {
     // overwrite existing labels: filter into labels to remove and labels to add
-    console.log('Labels update ', labels); // labels is array of objects with the labelKVs as values
+    console.log('Labels update ', labels); // labels is array of objects with {key: labelKey} as values
     let toRemove: any[] = [];
     let toAdd = [];
     let checklistLabels : AngularFireList<any> = this.database.list('/checklists/' + this.navParams.get('key') + '/labels');
     this.database.object('/checklists/' + this.navParams.get('key') + '/labels').valueChanges().take(1).subscribe(checklistLabelsObjs => {
       if(labels){
-        toAdd = Object.keys(labels).map(key => labels[key].key); // array of keys to add
+        toAdd = Object.keys(labels).map(key => labels[key]); // array of keys to add
         let existingLabelkey;
         for(existingLabelkey in checklistLabelsObjs) {
-          if(!Object.keys(labels).map(key => labels[key].key).includes(checklistLabelsObjs[existingLabelkey])){ // label needs to be removed from existing labels
+          if(!Object.keys(labels).map(key => labels[key]).includes(checklistLabelsObjs[existingLabelkey])){ // label needs to be removed from existing labels
             toRemove.push(checklistLabelsObjs[existingLabelkey]);
           } else { // label already exists, doesn't need to be readded
             let id = toAdd.indexOf(checklistLabelsObjs[existingLabelkey]);
