@@ -16,14 +16,16 @@ export class ChecklistPage {
   itemKVPairs: any;
   checklistSubscription;
   itemsSubscription;
+  labelKeys;
   labels;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase) {
     let path = '/checklists/' + navParams.get('key');
     this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
       this.checklistData = clData;
-      this.labels = clData['labels'];
-      console.log('Checklist data is ', clData);
+      this.labelKeys = clData['labels'];
+      this.updateLabels(this.labelKeys);
+      console.log('Checklist ', clData);
       console.log('labels ', this.labels);
       // todo populate KV pairs via checklist rather than via items [optimization]
       this.itemsSubscription = this.database.object('/items').valueChanges().subscribe(itemData => {
@@ -51,6 +53,20 @@ export class ChecklistPage {
     });
   }
 
+  updateLabels(labelData){
+    console.log('label data', labelData);
+    if(labelData){
+      this.labels = labelData;
+      this.labels = [];
+      Object.keys(labelData).map(key => labelData[key]).forEach (labelKey => {
+        this.database.object('/labels/' + labelKey).valueChanges().take(1).subscribe(labelData => {
+          this.labels.push(labelData);
+        });
+      });
+      console.log('labels', this.labels);
+    }
+  }
+
   populateUI() {
     document.getElementById("title").innerHTML = this.checklistData.name;
     document.getElementById("description").innerHTML = this.checklistData.description;
@@ -63,7 +79,7 @@ export class ChecklistPage {
         name: formControl.get('name').value,
         description: formControl.get('description').value
       });
-      this.updateLabels(labels);
+      this.updateDatabaseWithLabels(labels);
     };
 
     let clInfo;
@@ -76,12 +92,12 @@ export class ChecklistPage {
         submit: (formControl, labels) => submit(formControl, labels),
         checklistKey: this.navParams.get('key'),
         existingInfo: clInfo,
-        existingLabels: this.labels
+        existingLabels: this.labelKeys
       });
     });
   }
 
-  updateLabels(labels: any) {
+  updateDatabaseWithLabels(labels: any) {
     // overwrite existing labels: filter into labels to remove and labels to add
     console.log('Labels update ', labels); // labels is array of objects with {key: labelKey} as values
     let toRemove: any[] = [];

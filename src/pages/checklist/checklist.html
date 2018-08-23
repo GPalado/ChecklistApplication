@@ -18,6 +18,10 @@
 </ion-header>
 
 <ion-content padding>
+  <ion-label>Labels: </ion-label>
+  <ion-item>
+    <ion-badge *ngFor="let label of labels">{{label.name}}</ion-badge>
+  </ion-item>
   <ion-title id="description"></ion-title>
   <ion-list>
     <li *ngFor="let item of itemKVPairs | keyValue" >
