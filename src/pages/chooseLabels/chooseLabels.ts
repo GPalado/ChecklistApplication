@@ -17,17 +17,19 @@ export class ChooseLabelsPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public formBuilder: FormBuilder) {
     this.callback = this.navParams.get('callback');
-    this.existingLabels = this.navParams.get('labels') || [];
+    this.existingLabels = this.navParams.get('existingLabels') || [];
+    console.log('existing labels ', this.existingLabels); // object of kv pairs
     database.object('/labels').valueChanges().subscribe(data => {
       if(data) {
+        console.log('data ', data); // object of kv pairs
         this.labels = Object.entries(data).map(([key, value]) => ({key,value}));
-        console.log('labels ', this.labels);
+        console.log('labels ', this.labels); // array of objects
         if(this.labels){
           const controls = this.labels.map(c => new FormControl(false));
-          // todo make controls that exist true.
           for(let i in controls){
-            console.log('control ', controls[i]);
-            // if(this.existingLabels.includes(data[i].key))
+            if(Object.keys(this.existingLabels).map(key => this.existingLabels[key]).includes(Object.keys(data)[i])){
+              controls[i].value = true;
+            }
           }
           this.formControl = this.formBuilder.group({
             labels: new FormArray(controls)

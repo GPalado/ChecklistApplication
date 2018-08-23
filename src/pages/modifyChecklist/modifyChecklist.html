@@ -22,7 +22,7 @@
     <button ion-button block (click)="addLabels()">Choose Labels</button>
     <ion-list *ngIf="labels !== undefined">
       <ion-label>Labels:</ion-label>
-      <ion-item *ngFor="let label of labels">
+      <ion-item *ngFor="let label of labels | keyValue">
         <ion-label>{{label.value.name}}</ion-label>
       </ion-item>
     </ion-list>

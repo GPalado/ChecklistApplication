@@ -16,12 +16,15 @@ export class ChecklistPage {
   itemKVPairs: any;
   checklistSubscription;
   itemsSubscription;
+  labels;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase) { 
+  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase) {
     let path = '/checklists/' + navParams.get('key');
     this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
       this.checklistData = clData;
-      console.log("Checklist data is " + clData);
+      this.labels = clData['labels'];
+      console.log('Checklist data is ', clData);
+      console.log('labels ', this.labels);
       // todo populate KV pairs via checklist rather than via items [optimization]
       this.itemsSubscription = this.database.object('/items').valueChanges().subscribe(itemData => {
         let itemKVs = itemData;
@@ -72,7 +75,8 @@ export class ChecklistPage {
         pageName: 'Edit Checklist',
         submit: (formControl, labels) => submit(formControl, labels),
         checklistKey: this.navParams.get('key'),
-        existingInfo: clInfo
+        existingInfo: clInfo,
+        existingLabels: this.labels
       });
     });
   }

@@ -33,7 +33,7 @@ export class ModifyChecklistPage {
       this.formControl.controls['description'].setValue(existingInfo['description']);
     }
     var existingLabels = navParams.get('existingLabels');
-    if(existingLabels !== null){
+    if(existingLabels){
       this.labels = existingLabels;
     }
   }
@@ -43,7 +43,7 @@ export class ModifyChecklistPage {
       this.labels = data;
     };
     this.navCtrl.push(ChooseLabelsPage, {
-        labels: this.labels,
+        existingLabels: this.labels,
         callback: getLabels
     });
   }
