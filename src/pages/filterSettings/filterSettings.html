@@ -8,21 +8,22 @@
 </ion-header>
 
 <ion-content padding>
-  <form (ngSubmit)="updateFilters()">
+  <form [formGroup]="formControl" (ngSubmit)="save()">
     <ion-item>
-      <!-- todo use for each and pull filter list from db -->
-      <ion-label>All</ion-label>
-      <ion-checkbox [(ngModel)]="filter.all" name="all" (ionChange)="updateAll()"></ion-checkbox>
+      <ion-label>View All:</ion-label>
+      <ion-toggle name="viewAll" (onChange)="allChanged()"></ion-toggle>
     </ion-item>
-    <ion-item>
-      <ion-label>Flagged</ion-label>
-      <ion-checkbox [(ngModel)]="filter.flagged" name="flagged"></ion-checkbox>
-    </ion-item>
-    <ion-buttons>
-      <button ion-button (click)="addNewLabel()">
-        <ion-icon name="add"> Add New Label</ion-icon>
-      </button>
-    </ion-buttons>
+    <ion-list *ngIf="labels">
+      <ion-label formArrayName="labels" *ngFor="let label of labels; let i = index">
+        <ion-checkbox [formControlName]="i"></ion-checkbox>
+        {{label.value.name}}
+      </ion-label>
+    </ion-list>
     <button ion-button type="submit" block>Save</button>
   </form>
+  <ion-buttons>
+    <button ion-button (click)="addNewLabel()">
+      <ion-icon name="add"> Add New Label</ion-icon>
+    </button>
+  </ion-buttons>
 </ion-content>
