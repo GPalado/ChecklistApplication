@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { NewItemPage } from '../newItem/newItem';
-import { ItemPage } from '../item/item';
 import { AngularFireDatabase, AngularFireList } from '../../../node_modules/angularfire2/database';
 import 'rxjs/add/operator/take';
 import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
-import { FormControl, FormGroup } from '../../../node_modules/@angular/forms';
+import { FormControl, FormGroup, FormBuilder, FormArray } from '../../../node_modules/@angular/forms';
 
 @Component({
   selector: 'page-checklist',
@@ -18,8 +17,12 @@ export class ChecklistPage {
   itemsSubscription;
   labelKeys;
   labels;
+  formControl = this.formBuilder.group({
+    items: new FormArray([])
+  });
+  itemsFormArray : FormArray;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public alertCtrl: AlertController, public formBuilder: FormBuilder) {
     let path = '/checklists/' + navParams.get('key');
     this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
       this.checklistData = clData;
@@ -27,7 +30,6 @@ export class ChecklistPage {
       this.updateLabels(this.labelKeys);
       console.log('Checklist ', clData);
       console.log('labels ', this.labels);
-      // todo populate KV pairs via checklist rather than via items [optimization]
       this.itemsSubscription = this.database.object('/items').valueChanges().subscribe(itemData => {
         let itemKVs = itemData;
         let checklistItemIDObj = this.checklistData.itemIDs;
@@ -48,6 +50,7 @@ export class ChecklistPage {
           console.log("Checklist ItemIDs undefined");
           this.itemKVPairs = [];
         }
+        this.setUpControls();
       });
       this.populateUI();
     });
@@ -65,6 +68,39 @@ export class ChecklistPage {
       });
       console.log('labels', this.labels);
     }
+  }
+
+  controlsCompletedSetup(): boolean {
+    if(this.itemsFormArray && this.itemKVPairs){
+      return Object.keys(this.itemsFormArray['controls']).length == Object.keys(this.itemKVPairs).length*2;
+    } 
+    return false;
+  }
+
+  setUpControls() {
+    let itemsControls = [];
+    let innerCount = 0;
+    let outerCount = 0;
+    Object.keys(this.itemKVPairs).forEach( key => {
+      let item = this.itemKVPairs[key];
+      itemsControls[key] = new FormControl(item.content);
+      console.log('eky', key);
+      let itemKey = Object.keys(this.itemKVPairs)[outerCount];
+      console.log('itemkey', itemKey);
+      this.database.object('/items/'+itemKey).valueChanges().take(1).subscribe(itemObj => {
+        console.log('item', itemObj);
+        let isChecked = itemObj['checked'];
+        console.log('checked ', isChecked);
+        itemsControls[key+innerCount] = new FormControl(isChecked);
+        innerCount = innerCount + 1;
+      });
+      outerCount = outerCount + 1;
+    });
+    this.itemsFormArray = new FormArray(itemsControls);
+    this.formControl = this.formBuilder.group({
+      items: this.itemsFormArray
+    });
+    console.log('itemsformarray', this.itemsFormArray);
   }
 
   populateUI() {
@@ -96,16 +132,6 @@ export class ChecklistPage {
       });
     });
   }
-
-  // itemValueChange(itemKey) {
-
-  // }
-
-  // itemChecked(itemKey) {
-  //   this.database.object('/items/' + itemKey).update({
-  //     checked: document.getElementById('content'+itemKey).
-  //   });
-  // }
 
   updateDatabaseWithLabels(labels: any) {
     // overwrite existing labels: filter into labels to remove and labels to add
@@ -163,7 +189,7 @@ export class ChecklistPage {
           text: 'Yes',
           handler: data => {
             console.log('Yes clicked');
-            this.doDelete();
+            this.doDeleteChecklist();
           }
         }
       ]
@@ -171,7 +197,7 @@ export class ChecklistPage {
     prompt.present();
   }
 
-  doDelete() {
+  doDeleteChecklist() {
     this.checklistSubscription.unsubscribe();
     this.itemsSubscription.unsubscribe();
     if(this.itemKVPairs) {
@@ -185,11 +211,49 @@ export class ChecklistPage {
     this.navCtrl.pop();
   }
 
-  viewItem(itemKey) {
-    console.log('Viewing item ', itemKey);
-    this.navCtrl.push(ItemPage, {
-      itemKey: itemKey,
-      checklistKey: this.navParams.get('key')
+  saveChanges() {
+    let count = 0;
+    Object.keys(this.itemKVPairs).forEach( key => {
+      let newContent = this.itemsFormArray['controls'][key].value;
+      let newChecked = this.itemsFormArray['controls'][key+count].value;
+      if(newChecked === null) { newChecked = false; }
+      this.database.object('/items/'+key).update({
+        content: newContent,
+        checked: newChecked
+      });
+      count = count + 1;
+    });
+    //todo message saying changes saved
+  }
+
+  deleteItem(itemKey) {
+    const prompt = this.alertCtrl.create({
+      title: 'Confirm',
+      message: "Are you sure you want to delete this item?",
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Yes',
+          handler: data => {
+            console.log('Yes clicked');
+            this.doDeleteItem(itemKey);
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
+  doDeleteItem(itemKey) {
+    this.database.object('/checklists/'+ this.navParams.get('key') +'/itemIDs').valueChanges().subscribe(itemIDs => {
+      var itemIDKey = Object.keys(itemIDs).find(key => itemIDs[key] === itemKey);
+      this.database.object('/items/' + itemKey).remove(); // remove item
+      this.database.object('/checklists/' + this.navParams.get('key') + '/itemIDs/' + itemIDKey).remove(); // remove item reference
     });
   }
 

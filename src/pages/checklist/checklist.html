@@ -23,22 +23,25 @@
     <ion-badge *ngFor="let label of labels">{{label.name}}</ion-badge>
   </ion-item>
   <ion-title id="description"></ion-title>
-  <ion-list>
-    <li *ngFor="let item of itemKVPairs | keyValue" >
-      <div class="item">
-        <ion-item>
-          <ion-input type="text" value="item.value.content" (onChange)="itemValueChange(item.key)" id="content"+"item.key"></ion-input>
-          <ion-checkbox (click)="itemChecked(item.key)"></ion-checkbox>
-        </ion-item>
-        <ion-buttons right>
-          <button ion-button icon-only class="editButton" (click)="viewItem(item.key)">
-            <ion-icon name="create"></ion-icon>
-          </button>
-        </ion-buttons>
-      </div>
-    </li>
-  </ion-list>
-  <ion-buttons right>
+  <form [formGroup]="formControl" (ngSubmit)="saveChanges()">
+    <ion-list *ngIf="controlsCompletedSetup()">
+      <ion-item>
+        <ion-row formArrayName="items" *ngFor="let item of itemKVPairs | keyValue; let i = index">
+          <ion-col><ion-item><ion-checkbox formControlName="{{item.key + i}}"></ion-checkbox></ion-item></ion-col>
+          <ion-col><ion-item><ion-input type="text" formControlName="{{item.key}}"></ion-input></ion-item></ion-col>
+          <ion-col><ion-item>
+            <ion-buttons right>
+              <button ion-button icon-only (click)="deleteItem(item.key)">
+                <ion-icon name="close"></ion-icon>
+              </button>
+            </ion-buttons>
+          </ion-item></ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+    <button ion-button type="submit" block>Save Changes</button>
+  </form>
+  <ion-buttons>
     <button ion-button (click)="addNewItem()">
       <ion-icon name="add"> Add New Item</ion-icon>
     </button>

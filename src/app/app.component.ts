@@ -8,7 +8,6 @@ import { SettingsPage } from '../pages/settings/settings';
 import { DisplaySettingsPage } from '../pages/displaySettings/displaySettings';
 import { FilterSettingsPage } from '../pages/filterSettings/filterSettings';
 import { ChecklistPage } from '../pages/checklist/checklist';
-import { ItemPage } from '../pages/item/item';
 import { NewItemPage } from '../pages/newItem/newItem';
 import { NewLabelPage } from '../pages/newLabel/newLabel';
 import { ChooseLabelsPage } from '../pages/chooseLabels/chooseLabels';
@@ -34,7 +33,6 @@ export class MyApp {
       { title: 'Display Settings', component: DisplaySettingsPage },
       { title: 'Filter Settings', component: FilterSettingsPage },
       { title: 'Checklist', component: ChecklistPage },
-      { title: 'Item', component: ItemPage },
       { title: 'Choose Labels', component: ChooseLabelsPage },
       { title: 'New Item', component: NewItemPage },
       { title: 'New Label', component: NewLabelPage},

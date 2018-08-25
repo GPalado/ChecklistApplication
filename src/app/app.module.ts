@@ -12,7 +12,6 @@ import { PipesModule } from '../pipes/pipes.module';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { ChecklistPage } from '../pages/checklist/checklist';
-import { ItemPage } from '../pages/item/item';
 import { NewItemPage } from '../pages/newItem/newItem';
 import { FormsModule } from '@angular/forms';
 import { NewLabelPage } from '../pages/newLabel/newLabel';
@@ -39,7 +38,6 @@ export const firebaseConfig = {
     DisplaySettingsPage,
     FilterSettingsPage,
     ChecklistPage,
-    ItemPage,
     NewItemPage,
     NewLabelPage,
     ChooseLabelsPage,
@@ -62,7 +60,6 @@ export const firebaseConfig = {
     DisplaySettingsPage,
     FilterSettingsPage,
     ChecklistPage,
-    ItemPage,
     NewItemPage,
     NewLabelPage,
     ChooseLabelsPage,
