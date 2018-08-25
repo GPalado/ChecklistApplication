@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ToastController } from 'ionic-angular';
 import { SettingsPage } from '../settings/settings';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable } from '../../../node_modules/rxjs';
@@ -15,7 +15,7 @@ export class HomePage {
   checklists: Observable<any>;
   labelNames = {};
 
-  constructor(public navCtrl: NavController, public database: AngularFireDatabase) {
+  constructor(public navCtrl: NavController, public database: AngularFireDatabase, public toastCtrl: ToastController) {
     this.database.object('/labels').valueChanges().subscribe( labelData => {
       Object.keys(labelData).forEach(labelKey =>{
         this.labelNames[labelKey] = labelData[labelKey];
@@ -38,7 +38,7 @@ export class HomePage {
   addNewChecklist() {
     var submit = (formControl: FormControl, cls: AngularFireList<any>, labels: any) => {
       var descrip = formControl.get('description').value;
-      if(descrip){
+      if(!descrip){
         descrip="";
       }
       const newChecklistRef = cls.push({
@@ -56,6 +56,11 @@ export class HomePage {
         }
       }
       console.log('Save checklist ', newChecklistRef);
+      const toast = this.toastCtrl.create({
+        message: 'Checklist saved successfully',
+        duration: 3000
+      });
+      toast.present();
     }
     
     this.navCtrl.push(ModifyChecklistPage, {

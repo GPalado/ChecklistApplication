@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ToastController } from 'ionic-angular';
 import {Validators, FormBuilder} from '@angular/forms';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 
@@ -14,10 +14,9 @@ export class NewLabelPage {
   formControl = this.formBuilder.group({
     name: ['', Validators.compose([Validators.maxLength(this.maxChars), Validators.required])],
     labelCheckboxes: ['', Validators.compose([Validators.required])]
-    // colour: ['', Validators.compose([Validators.required])]
   });
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public formBuilder: FormBuilder, public database: AngularFireDatabase) { 
+  constructor(public navCtrl: NavController, public navParams: NavParams, public formBuilder: FormBuilder, public database: AngularFireDatabase, public toastCtrl: ToastController) { 
     this.labels = database.list('/labels');
   }
 
@@ -27,6 +26,11 @@ export class NewLabelPage {
     });
     console.log('Save label ', newLabelRef.key);
     this.navCtrl.pop();
+    const toast = this.toastCtrl.create({
+      message: 'New label successfully created',
+      duration: 3000
+    });
+    toast.present();
   }
   
 }

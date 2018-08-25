@@ -5,7 +5,6 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { SettingsPage } from '../pages/settings/settings';
-import { DisplaySettingsPage } from '../pages/displaySettings/displaySettings';
 import { FilterSettingsPage } from '../pages/filterSettings/filterSettings';
 import { PipesModule } from '../pipes/pipes.module';
 
@@ -35,7 +34,6 @@ export const firebaseConfig = {
     MyApp,
     HomePage,
     SettingsPage,
-    DisplaySettingsPage,
     FilterSettingsPage,
     ChecklistPage,
     NewItemPage,
@@ -57,7 +55,6 @@ export const firebaseConfig = {
     MyApp,
     HomePage,
     SettingsPage,
-    DisplaySettingsPage,
     FilterSettingsPage,
     ChecklistPage,
     NewItemPage,

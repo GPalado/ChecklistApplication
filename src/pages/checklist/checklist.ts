@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController } from 'ionic-angular';
+import { NavController, NavParams, AlertController, ToastController } from 'ionic-angular';
 import { NewItemPage } from '../newItem/newItem';
 import { AngularFireDatabase, AngularFireList } from '../../../node_modules/angularfire2/database';
 import 'rxjs/add/operator/take';
@@ -22,7 +22,7 @@ export class ChecklistPage {
   });
   itemsFormArray : FormArray;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public alertCtrl: AlertController, public formBuilder: FormBuilder) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public alertCtrl: AlertController, public formBuilder: FormBuilder, public toastCtrl: ToastController) {
     let path = '/checklists/' + navParams.get('key');
     this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
       this.checklistData = clData;
@@ -116,6 +116,11 @@ export class ChecklistPage {
         description: formControl.get('description').value
       });
       this.updateDatabaseWithLabels(labels);
+      const toast = this.toastCtrl.create({
+        message: 'Checklist changes saved successfully',
+        duration: 3000
+      });
+      toast.present();
     };
 
     let clInfo;
@@ -209,6 +214,11 @@ export class ChecklistPage {
     console.log('Deleting checklist' + this.navParams.get('key'));
     this.database.object('/checklists/' + this.navParams.get('key')).remove();
     this.navCtrl.pop();
+    const toast = this.toastCtrl.create({
+      message: 'Checklist successfully deleted',
+      duration: 3000
+    });
+    toast.present();
   }
 
   saveChanges() {
@@ -223,7 +233,11 @@ export class ChecklistPage {
       });
       count = count + 1;
     });
-    //todo message saying changes saved
+    const toast = this.toastCtrl.create({
+      message: 'Changes saved successfully',
+      duration: 3000
+    });
+    toast.present();
   }
 
   deleteItem(itemKey) {
@@ -250,11 +264,16 @@ export class ChecklistPage {
   }
 
   doDeleteItem(itemKey) {
-    this.database.object('/checklists/'+ this.navParams.get('key') +'/itemIDs').valueChanges().subscribe(itemIDs => {
+    this.database.object('/checklists/'+ this.navParams.get('key') +'/itemIDs').valueChanges().take(1).subscribe(itemIDs => {
       var itemIDKey = Object.keys(itemIDs).find(key => itemIDs[key] === itemKey);
       this.database.object('/items/' + itemKey).remove(); // remove item
       this.database.object('/checklists/' + this.navParams.get('key') + '/itemIDs/' + itemIDKey).remove(); // remove item reference
     });
+    const toast = this.toastCtrl.create({
+      message: 'Item successfully deleted',
+      duration: 3000
+    });
+    toast.present();
   }
 
   addNewItem() {
