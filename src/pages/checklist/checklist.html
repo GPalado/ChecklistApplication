@@ -27,9 +27,8 @@
     <li *ngFor="let item of itemKVPairs | keyValue" >
       <div class="item">
         <ion-item>
-          <ion-label>{{item.value.content}}</ion-label>
-          <ion-checkbox></ion-checkbox>
-          <!-- [(ngModel)]="item.value.checked" above ? -->
+          <ion-input type="text" value="item.value.content" (onChange)="itemValueChange(item.key)" id="content"+"item.key"></ion-input>
+          <ion-checkbox (click)="itemChecked(item.key)"></ion-checkbox>
         </ion-item>
         <ion-buttons right>
           <button ion-button icon-only class="editButton" (click)="viewItem(item.key)">

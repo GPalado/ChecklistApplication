@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { NewItemPage } from '../newItem/newItem';
 import { ItemPage } from '../item/item';
 import { AngularFireDatabase, AngularFireList } from '../../../node_modules/angularfire2/database';
@@ -19,7 +19,7 @@ export class ChecklistPage {
   labelKeys;
   labels;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public alertCtrl: AlertController) {
     let path = '/checklists/' + navParams.get('key');
     this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
       this.checklistData = clData;
@@ -97,6 +97,16 @@ export class ChecklistPage {
     });
   }
 
+  // itemValueChange(itemKey) {
+
+  // }
+
+  // itemChecked(itemKey) {
+  //   this.database.object('/items/' + itemKey).update({
+  //     checked: document.getElementById('content'+itemKey).
+  //   });
+  // }
+
   updateDatabaseWithLabels(labels: any) {
     // overwrite existing labels: filter into labels to remove and labels to add
     console.log('Labels update ', labels); // labels is array of objects with {key: labelKey} as values
@@ -125,7 +135,6 @@ export class ChecklistPage {
       toRemove.forEach(remove =>{
         this.database.object('/labels/' + remove + '/checklists').valueChanges().take(1).subscribe( labelChecklistsObj => {
           let checklistIDKey = Object.keys(labelChecklistsObj).find(key => labelChecklistsObj[key] === this.navParams.get('key'));
-          console.log('checklist id key ', checklistIDKey);
           this.database.list('/labels/' + remove + '/checklists/' + checklistIDKey).remove();
           
           let labelIDKey = Object.keys(checklistLabelsObjs).find(key => checklistLabelsObjs[key] === remove);
@@ -140,7 +149,29 @@ export class ChecklistPage {
   }
 
   deleteChecklist() {
-    // todo alert for check make sure etc things
+    const prompt = this.alertCtrl.create({
+      title: 'Confirm',
+      message: "Are you sure you want to delete this checklist?",
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Yes',
+          handler: data => {
+            console.log('Yes clicked');
+            this.doDelete();
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
+  doDelete() {
     this.checklistSubscription.unsubscribe();
     this.itemsSubscription.unsubscribe();
     if(this.itemKVPairs) {

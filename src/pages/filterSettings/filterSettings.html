@@ -10,12 +10,12 @@
 <ion-content padding>
   <form [formGroup]="formControl" (ngSubmit)="save()">
     <ion-item>
-      <ion-label>View All:</ion-label>
-      <ion-toggle name="viewAll" (onChange)="allChanged()"></ion-toggle>
+      <ion-label>Select All</ion-label>
+      <ion-checkbox formControlName="viewAll" (click)="clickedAll()"></ion-checkbox>
     </ion-item>
-    <ion-list *ngIf="labels">
+    <ion-list *ngIf="labelsPopulated">
       <ion-label formArrayName="labels" *ngFor="let label of labels; let i = index">
-        <ion-checkbox [formControlName]="i"></ion-checkbox>
+        <ion-checkbox [formControlName]="i" (click)="clickedFilter()"></ion-checkbox>
         {{label.value.name}}
       </ion-label>
     </ion-list>

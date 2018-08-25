@@ -38,19 +38,20 @@ export class HomePage {
   addNewChecklist() {
     var submit = (formControl: FormControl, cls: AngularFireList<any>, labels: any) => {
       var descrip = formControl.get('description').value;
-      if(descrip===undefined){
+      if(descrip){
         descrip="";
       }
       const newChecklistRef = cls.push({
         name: formControl.get('name').value,
         description: descrip
       });
-      if(labels !== null && labels !== undefined){
+      console.log('new labels ', labels);
+      if(labels){
         var checklistLabels : AngularFireList<any> = this.database.list('/checklists/' + newChecklistRef.key + '/labels');
         var key;
         for(key in Object.keys(labels)) {
-          checklistLabels.push(labels[key].key);
-          var labelChecklists : AngularFireList<any> = this.database.list('/labels/' + labels[key].key + '/checklists');
+          checklistLabels.push(labels[key]);
+          var labelChecklists : AngularFireList<any> = this.database.list('/labels/' + labels[key] + '/checklists');
           labelChecklists.push(newChecklistRef.key);
         }
       }
