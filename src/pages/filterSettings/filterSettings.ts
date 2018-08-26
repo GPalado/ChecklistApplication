@@ -97,8 +97,10 @@ export class FilterSettingsPage {
 
   updateIsAllGivenValue(value : boolean) {
     this.formControl.get('viewAll').setValue(value);
-    for(let control of this.labelsFormArray.controls) {
-      control.setValue(value);
+    if(this.labelsFormArray) {
+      for(let control of this.labelsFormArray.controls) {
+        control.setValue(value);
+      }
     }
   }
 

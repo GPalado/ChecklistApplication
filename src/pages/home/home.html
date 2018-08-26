@@ -15,12 +15,12 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-list>
-    <li *ngFor="let checklist of checklists | async | keyValue" (click)="goToChecklist(checklist.key)">
+  <ion-list *ngIf="checklists !== undefined">
+    <li *ngFor="let checklist of checklists | keyValue" (click)="goToChecklist(checklist.key)">
       <ion-card id="checklist-card">
         <ion-card-header>{{checklist.value.name}}</ion-card-header>
         <ion-card-content>{{checklist.value.description}}</ion-card-content> 
-        <ion-item>
+        <ion-item *ngIf="checklist.value.labels !== undefined && labelNames !== undefined">
             <ion-badge *ngFor="let labelRef of checklist.value.labels | keyValue">{{this.getLabelFor(labelRef.value)}}</ion-badge>
         </ion-item>
       </ion-card>

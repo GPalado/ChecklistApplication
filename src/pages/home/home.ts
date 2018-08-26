@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavController, ToastController } from 'ionic-angular';
 import { SettingsPage } from '../settings/settings';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
-import { Observable } from '../../../node_modules/rxjs';
 import { ChecklistPage } from '../checklist/checklist';
 import { FormControl } from '../../../node_modules/@angular/forms';
 import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
@@ -12,25 +11,75 @@ import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  checklists: Observable<any>;
-  labelNames = {};
+  checklists;
+  labelNames;
+  labelData;
+  filterData;
 
   constructor(public navCtrl: NavController, public database: AngularFireDatabase, public toastCtrl: ToastController) {
     this.database.object('/labels').valueChanges().subscribe( labelData => {
+      console.log('labels update', labelData);
       if(labelData){
+        this.labelData = labelData;
+        this.labelNames = {};
         Object.keys(labelData).forEach(labelKey =>{
           this.labelNames[labelKey] = labelData[labelKey];
         });
       }
     });
+    this.database.object('/filters').valueChanges().subscribe(filterData => {
+      this.filterData = filterData;
+      console.log('filters update', filterData);
+    });
+    this.database.object('/checklists').valueChanges().subscribe(checklistData => {
+      console.log('checklists update', checklistData);
+      this.checklists = {};
+      this.updateFilters(checklistData);
+    });    
+  }
+
+  updateFilters(checklistData) {
+    if(this.filterData) {
+        if(this.filterData['all']){
+          this.getChecklists(checklistData, [], true);
+        } else {
+          this.getChecklists(checklistData, this.getChecklistIDs(), false);
+        }
+      } else {
+        this.getChecklists(checklistData, [], true);
+      }
+  }
+
+  getChecklistIDs(): String[]{
+    let validChecklistIDs = [];
+    let activeList = this.filterData['activeList'];
+    if(this.labelData && activeList){
+      for(let activeListKey of Object.keys(activeList)){
+        let labelID = activeList[activeListKey];
+        if(this.labelData[labelID]['checklists']) {
+          let checklistKeys = Object.keys(this.labelData[labelID]['checklists']).map(key => this.labelData[labelID]['checklists'][key]);
+          for(let key of checklistKeys){
+            if(!validChecklistIDs.includes(key)) {
+              validChecklistIDs.push(key);
+            }
+          }
+        }
+      }
+    }
+    return validChecklistIDs;
+  }
+
+  getChecklists(checklistData, keys : String[], all : boolean){
+    for(let checklistKey of Object.keys(checklistData)){
+      if(all || keys.includes(checklistKey)) {
+        this.checklists[checklistKey] = checklistData[checklistKey];
+      }
+    }
+    console.log('checklists', this.checklists);
   }
 
   public getLabelFor(key) : string {
     return this.labelNames[key]['name'];
-  }
-
-  ionViewDidLoad() {
-    this.checklists = this.database.object('/checklists').valueChanges();
   }
 
   goToSettings() {
@@ -47,7 +96,6 @@ export class HomePage {
         name: formControl.get('name').value,
         description: descrip
       });
-      console.log('new labels ', labels);
       if(labels){
         var checklistLabels : AngularFireList<any> = this.database.list('/checklists/' + newChecklistRef.key + '/labels');
         var key;
