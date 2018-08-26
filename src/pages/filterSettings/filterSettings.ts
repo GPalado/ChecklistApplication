@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ToastController } from 'ionic-angular';
 import { NewLabelPage } from '../newLabel/newLabel';
 import { AngularFireDatabase, AngularFireList } from '../../../node_modules/angularfire2/database';
 import { FormBuilder, FormControl, FormArray, Validators } from '../../../node_modules/@angular/forms';
@@ -21,9 +21,13 @@ export class FilterSettingsPage {
   activeListSubscription;
   labelsSubscription;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public formBuilder: FormBuilder) { 
+  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public formBuilder: FormBuilder, public toastCtrl: ToastController) { 
     this.filters = database.list('/filters/');
-    this.filtersObj = database.object('/filters/');
+    database.object('/filters/').valueChanges().subscribe( filtersObj => {
+      this.filtersObj = filtersObj;
+      this.updateIsAllGivenValue(this.filtersObj['all']);
+      console.log('filtersobj', this.filtersObj);
+    });
     this.labelsSubscription = database.object('/labels').valueChanges().subscribe(data => {
       if(data) {
         console.log('label data ', data); // object of kv pairs
@@ -31,18 +35,18 @@ export class FilterSettingsPage {
         if(this.labels) {
           this.activeListSubscription = database.object('/filters/activeList').valueChanges().subscribe( activeListObj => {
             let labelsControls = this.labels.map(c => new FormControl(false));
-            for(let i in labelsControls){
-              let dataKey = Object.keys(data)[i];
-              console.log('active list', activeListObj);
-              let isChecked = Object.keys(activeListObj).map(key => activeListObj[key]).includes(dataKey);
-              if(isChecked){
-                labelsControls[i].value = true;
+            if(activeListObj) {
+              for(let i in labelsControls){
+                let dataKey = Object.keys(data)[i];
+                let isChecked = Object.keys(activeListObj).map(key => activeListObj[key]).includes(dataKey);
+                if(isChecked){
+                  labelsControls[i].value = true;
+                }
               }
             }
-            let isAll: boolean = this.filtersObj['all'];
             this.labelsFormArray = new FormArray(labelsControls);
             this.formControl = this.formBuilder.group({
-              viewAll:  [isAll, Validators.compose([Validators.required])],
+              viewAll:  [this.getIsAllGivenControls(), Validators.compose([Validators.required])],
               labels: this.labelsFormArray
             });
             this.labelsPopulated = true;
@@ -74,35 +78,42 @@ export class FilterSettingsPage {
       activeList.push(s.key);
     }
     let isAll = this.formControl.get('viewAll').value;
-    this.filtersObj.update({
+    console.log('is all set to', isAll);
+    this.database.object('/filters/').update({
       all: isAll
     });
-    // take back to home
     this.navCtrl.goToRoot({});
+    const toast = this.toastCtrl.create({
+      message: 'Filters applied successfully',
+      duration: 3000
+    });
+    toast.present();
   }
 
-  clickedFilter() {
+  clickedAll() {
+    let isAll = this.formControl.get('viewAll').value;
+    this.updateIsAllGivenValue(isAll);
+  }
+
+  updateIsAllGivenValue(value : boolean) {
+    this.formControl.get('viewAll').setValue(value);
+    for(let control of this.labelsFormArray.controls) {
+      control.setValue(value);
+    }
+  }
+
+  getIsAllGivenControls() : boolean {
     let allSelected = true;
     for(let control of this.labelsFormArray.controls) {
       if(!control.value) {
         allSelected = false;
       }
     }
-    this.formControl.get('viewAll').setValue(allSelected);
-    // this.filtersObj.update({
-    //   all: allSelected
-    // });
+    return allSelected;
   }
 
-  clickedAll() {
-    let isAll = this.formControl.get('viewAll').value;
-    // this.filtersObj.update({
-    //   all: isAll
-    // });
-    // console.log('isall ', isAll);
-    for(let control of this.labelsFormArray.controls) {
-      control.setValue(isAll);
-    }
+  updateIsAllGivenControls(){
+    this.formControl.get('viewAll').setValue(this.getIsAllGivenControls());
   }
 
 }

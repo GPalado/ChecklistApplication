@@ -17,9 +17,11 @@ export class HomePage {
 
   constructor(public navCtrl: NavController, public database: AngularFireDatabase, public toastCtrl: ToastController) {
     this.database.object('/labels').valueChanges().subscribe( labelData => {
-      Object.keys(labelData).forEach(labelKey =>{
-        this.labelNames[labelKey] = labelData[labelKey];
-      });
+      if(labelData){
+        Object.keys(labelData).forEach(labelKey =>{
+          this.labelNames[labelKey] = labelData[labelKey];
+        });
+      }
     });
   }
 
