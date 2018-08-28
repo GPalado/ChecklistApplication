@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, AlertController, ToastController } from 'ionic-angular';
-import { NewItemPage } from '../newItem/newItem';
-import { AngularFireDatabase, AngularFireList } from '../../../node_modules/angularfire2/database';
 import 'rxjs/add/operator/take';
 import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
-import { FormControl, FormGroup, FormBuilder, FormArray } from '../../../node_modules/@angular/forms';
+import { FormControl, FormBuilder, FormArray } from '../../../node_modules/@angular/forms';
 import { DatabaseService } from '../../app/database.service';
 
 @Component({
@@ -225,8 +223,45 @@ export class ChecklistPage {
   }
 
   addNewItem() {
-    this.navCtrl.push(NewItemPage, {
-      checklistKey: this.navParams.get('key')
+    const prompt = this.alertCtrl.create({
+      title: 'New Item',
+      message: "Enter the content of this new item",
+      inputs: [
+        {
+          name: 'content',
+          placeholder: 'Content'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            console.log('Saved clicked');
+            this.doSaveItem(data);
+          }
+        }
+      ]
     });
+    prompt.present();
+  }
+  
+  doSaveItem(data: Object) {
+    let items = this.databaseService.getItemsList();
+    let itemIDs = this.databaseService.getChecklistItemIDsList(this.navParams.get('key'));
+    const newItemRef = items.push({
+      content: data['content']
+    });
+    itemIDs.push(newItemRef.key);
+    const toast = this.toastCtrl.create({
+      message: 'Item successfully created',
+      duration: 3000
+    });
+    toast.present();
   }
 }

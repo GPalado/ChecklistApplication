@@ -6,8 +6,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HomePage } from '../pages/home/home';
 import { FilterSettingsPage } from '../pages/filterSettings/filterSettings';
 import { ChecklistPage } from '../pages/checklist/checklist';
-import { NewItemPage } from '../pages/newItem/newItem';
-import { NewLabelPage } from '../pages/newLabel/newLabel';
 import { ChooseLabelsPage } from '../pages/chooseLabels/chooseLabels';
 import { ModifyChecklistPage } from '../pages/modifyChecklist/modifyChecklist';
 
@@ -30,8 +28,6 @@ export class MyApp {
       { title: 'Filter Settings', component: FilterSettingsPage },
       { title: 'Checklist', component: ChecklistPage },
       { title: 'Choose Labels', component: ChooseLabelsPage },
-      { title: 'New Item', component: NewItemPage },
-      { title: 'New Label', component: NewLabelPage},
       { title: 'Modify Checklist', component: ModifyChecklistPage}
     ];
 

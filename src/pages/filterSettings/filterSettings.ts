@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
-import { NewLabelPage } from '../newLabel/newLabel';
+import { NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { AngularFireList } from '../../../node_modules/angularfire2/database';
 import { FormBuilder, FormControl, FormArray, Validators } from '../../../node_modules/@angular/forms';
 import { DatabaseService } from '../../app/database.service';
@@ -22,7 +21,7 @@ export class FilterSettingsPage {
   activeListSubscription;
   labelsSubscription;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public databaseService: DatabaseService, public formBuilder: FormBuilder, public toastCtrl: ToastController) { 
+  constructor(public navCtrl: NavController, public navParams: NavParams, public databaseService: DatabaseService, public formBuilder: FormBuilder, public toastCtrl: ToastController, public alertCtrl: AlertController) { 
     this.filters = databaseService.getFiltersList();
     databaseService.getFiltersObj().subscribe( filtersObj => {
       this.filtersObj = filtersObj;
@@ -65,7 +64,45 @@ export class FilterSettingsPage {
   
   addNewLabel() {
     this.labelsPopulated = false;
-    this.navCtrl.push(NewLabelPage);
+    const prompt = this.alertCtrl.create({
+      title: 'New Label',
+      message: "Enter the name of this new label",
+      inputs: [
+        {
+          name: 'name',
+          placeholder: 'Name'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            console.log('Saved clicked');
+            this.doSaveLabel(data);
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
+  doSaveLabel(data: object) {
+    let labels = this.databaseService.getLabelsList();
+    const newLabelRef = labels.push({
+      name: data['name']
+    });
+    console.log('Save label ', newLabelRef.key);
+    const toast = this.toastCtrl.create({
+      message: 'New label successfully created',
+      duration: 3000
+    });
+    toast.present();
   }
 
   save() {

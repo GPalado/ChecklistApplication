@@ -10,9 +10,7 @@ import { PipesModule } from '../pipes/pipes.module';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { ChecklistPage } from '../pages/checklist/checklist';
-import { NewItemPage } from '../pages/newItem/newItem';
 import { FormsModule } from '@angular/forms';
-import { NewLabelPage } from '../pages/newLabel/newLabel';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { ColorPickerModule } from 'ngx-color-picker';
@@ -35,8 +33,6 @@ export const firebaseConfig = {
     HomePage,
     FilterSettingsPage,
     ChecklistPage,
-    NewItemPage,
-    NewLabelPage,
     ChooseLabelsPage,
     ModifyChecklistPage
   ],
@@ -55,8 +51,6 @@ export const firebaseConfig = {
     HomePage,
     FilterSettingsPage,
     ChecklistPage,
-    NewItemPage,
-    NewLabelPage,
     ChooseLabelsPage,
     ModifyChecklistPage
   ],
