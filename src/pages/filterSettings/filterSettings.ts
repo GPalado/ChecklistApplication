@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
 import { NewLabelPage } from '../newLabel/newLabel';
-import { AngularFireDatabase, AngularFireList } from '../../../node_modules/angularfire2/database';
+import { AngularFireList } from '../../../node_modules/angularfire2/database';
 import { FormBuilder, FormControl, FormArray, Validators } from '../../../node_modules/@angular/forms';
+import { DatabaseService } from '../../app/database.service';
 
 @Component({
   selector: 'page-filterSettings',
@@ -21,19 +22,23 @@ export class FilterSettingsPage {
   activeListSubscription;
   labelsSubscription;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public formBuilder: FormBuilder, public toastCtrl: ToastController) { 
-    this.filters = database.list('/filters/');
-    database.object('/filters/').valueChanges().subscribe( filtersObj => {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public databaseService: DatabaseService, public formBuilder: FormBuilder, public toastCtrl: ToastController) { 
+    this.filters = databaseService.getFiltersList();
+    databaseService.getFiltersObj().subscribe( filtersObj => {
       this.filtersObj = filtersObj;
-      this.updateIsAllGivenValue(this.filtersObj['all']);
+      if(this.filtersObj && this.filtersObj['all']){
+        this.updateIsAllGivenValue(this.filtersObj['all']);
+      } else {
+        this.updateIsAllGivenValue(true);
+      }
       console.log('filtersobj', this.filtersObj);
     });
-    this.labelsSubscription = database.object('/labels').valueChanges().subscribe(data => {
+    this.labelsSubscription = databaseService.getLabelsObj().subscribe(data => {
       if(data) {
         console.log('label data ', data); // object of kv pairs
         this.labels = Object.entries(data).map(([key, value]) => ({key,value})); // array of objects
         if(this.labels) {
-          this.activeListSubscription = database.object('/filters/activeList').valueChanges().subscribe( activeListObj => {
+          this.activeListSubscription = databaseService.getFilterActiveListObj().subscribe( activeListObj => {
             let labelsControls = this.labels.map(c => new FormControl(false));
             if(activeListObj) {
               for(let i in labelsControls){
@@ -72,16 +77,10 @@ export class FilterSettingsPage {
       .filter(v => v !== null);
 
     console.log('Selected ', selected);
-    let activeList = this.database.list('/filters/activeList');
-    activeList.remove();
-    for(let s of selected){
-      activeList.push(s.key);
-    }
+    this.databaseService.updateActiveList(selected);
     let isAll = this.formControl.get('viewAll').value;
     console.log('is all set to', isAll);
-    this.database.object('/filters/').update({
-      all: isAll
-    });
+    this.databaseService.updateFilters({all: isAll});
     this.navCtrl.goToRoot({});
     const toast = this.toastCtrl.create({
       message: 'Filters applied successfully',

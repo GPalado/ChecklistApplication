@@ -4,7 +4,6 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
-import { SettingsPage } from '../pages/settings/settings';
 import { FilterSettingsPage } from '../pages/filterSettings/filterSettings';
 import { PipesModule } from '../pipes/pipes.module';
 
@@ -19,6 +18,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { ChooseLabelsPage } from '../pages/chooseLabels/chooseLabels';
 import { ModifyChecklistPage } from '../pages/modifyChecklist/modifyChecklist';
+import { DatabaseService } from './database.service';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyCF6-lsSi-f099PFBUeSwajRbrU667qE7M",
@@ -33,7 +33,6 @@ export const firebaseConfig = {
   declarations: [
     MyApp,
     HomePage,
-    SettingsPage,
     FilterSettingsPage,
     ChecklistPage,
     NewItemPage,
@@ -54,7 +53,6 @@ export const firebaseConfig = {
   entryComponents: [
     MyApp,
     HomePage,
-    SettingsPage,
     FilterSettingsPage,
     ChecklistPage,
     NewItemPage,
@@ -65,7 +63,8 @@ export const firebaseConfig = {
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    DatabaseService
   ]
 })
 export class AppModule {}

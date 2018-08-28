@@ -5,6 +5,7 @@ import { AngularFireDatabase, AngularFireList } from '../../../node_modules/angu
 import 'rxjs/add/operator/take';
 import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
 import { FormControl, FormGroup, FormBuilder, FormArray } from '../../../node_modules/@angular/forms';
+import { DatabaseService } from '../../app/database.service';
 
 @Component({
   selector: 'page-checklist',
@@ -23,9 +24,8 @@ export class ChecklistPage {
   });
   itemsFormArray : FormArray;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public database: AngularFireDatabase, public alertCtrl: AlertController, public formBuilder: FormBuilder, public toastCtrl: ToastController) {
-    let path = '/checklists/' + navParams.get('key');
-    this.checklistSubscription = database.object(path).valueChanges().subscribe( clData => {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public databaseService: DatabaseService, public alertCtrl: AlertController, public formBuilder: FormBuilder, public toastCtrl: ToastController) {
+    this.checklistSubscription = databaseService.getChecklist(navParams.get('key')).subscribe( clData => {
       this.checklistObj = clData;
       this.processChecklistObj();
     });
@@ -35,7 +35,7 @@ export class ChecklistPage {
     console.log('Checklist ', this.checklistObj);
       this.labelKeys = this.checklistObj.labels;
       this.updateLabels(this.labelKeys);
-      this.itemsSubscription = this.database.object('/items').valueChanges().subscribe(itemData => {
+      this.itemsSubscription = this.databaseService.getItemsObj().subscribe(itemData => {
         this.checklistItemsObj = itemData;
         this.processChecklistItemsObj();
       });
@@ -69,7 +69,7 @@ export class ChecklistPage {
       this.labels = labelData;
       this.labels = [];
       Object.keys(labelData).map(key => labelData[key]).forEach (labelKey => {
-        this.database.object('/labels/' + labelKey).valueChanges().take(1).subscribe(labelData => {
+        this.databaseService.getLabel(labelKey).take(1).subscribe(labelData => {
           this.labels.push(labelData);
         });
       });
@@ -92,7 +92,7 @@ export class ChecklistPage {
       let item = this.itemKVPairs[key];
       itemsControls[key] = new FormControl(item.content);
       let itemKey = Object.keys(this.itemKVPairs)[outerCount];
-      this.database.object('/items/'+itemKey).valueChanges().take(1).subscribe(itemObj => {
+      this.databaseService.getItem(itemKey).take(1).subscribe(itemObj => {
         let isChecked = false;
         if(itemObj) {
           isChecked = itemObj['checked'];
@@ -115,12 +115,12 @@ export class ChecklistPage {
   
   editChecklist() {
     let submit = (formControl: FormControl, labels: any) => {
-      this.database.object('/checklists/' + this.navParams.get('key'))
-      .update({
+      this.databaseService.updateChecklist(this.navParams.get('key'),
+      {
         name: formControl.get('name').value,
         description: formControl.get('description').value
       });
-      this.updateDatabaseWithLabels(labels);
+      this.databaseService.updateChecklistWithLabels(this.navParams.get('key'), labels);
       const toast = this.toastCtrl.create({
         message: 'Checklist changes saved successfully',
         duration: 3000
@@ -134,45 +134,6 @@ export class ChecklistPage {
       checklistKey: this.navParams.get('key'),
       existingInfo: this.checklistObj,
       existingLabels: this.labelKeys
-    });
-  }
-
-  updateDatabaseWithLabels(labels: any) {
-    console.log('Labels update ', labels); // labels is array of objects with {key: labelKey} as values
-    let toRemove: any[] = [];
-    let toAdd = [];
-    let checklistLabels : AngularFireList<any> = this.database.list('/checklists/' + this.navParams.get('key') + '/labels');
-    this.database.object('/checklists/' + this.navParams.get('key') + '/labels').valueChanges().take(1).subscribe(checklistLabelsObjs => {
-      if(labels){
-        toAdd = Object.keys(labels).map(key => labels[key]); // array of keys to add
-        let existingLabelkey;
-        for(existingLabelkey in checklistLabelsObjs) {
-          if(!Object.keys(labels).map(key => labels[key]).includes(checklistLabelsObjs[existingLabelkey])){ // label needs to be removed from existing labels
-            toRemove.push(checklistLabelsObjs[existingLabelkey]);
-          } else { // label already exists, doesn't need to be readded
-            let id = toAdd.indexOf(checklistLabelsObjs[existingLabelkey]);
-            toAdd.splice(id, 1);
-          }
-        }
-      } else { // no labels selected - clear labels
-        console.log('No labels selected');
-        toRemove = Object.keys(checklistLabelsObjs);
-        checklistLabels.remove();
-      }
-      console.log('To Remove ', toRemove);
-      console.log('To Add ', toAdd);
-      toRemove.forEach(remove => { //remove is key of label id in checklist
-        let labelID = checklistLabelsObjs[remove];
-        this.database.object('/labels/' + labelID + '/checklists').valueChanges().take(1).subscribe(labelChecklistsObj => {
-          let checklistIDKey = Object.keys(labelChecklistsObj).find(key => labelChecklistsObj[key] === this.navParams.get('key'));
-          this.database.list('/labels/' + labelID + '/checklists/' + checklistIDKey).remove();
-          this.database.list('/checklists/' + this.navParams.get('key') + '/labels/'+ remove).remove();
-        });
-      });
-      toAdd.forEach(add => {
-        this.database.list('/labels/' + add + '/checklists').push(this.navParams.get('key'));
-        this.database.list('/checklists/' + this.navParams.get('key') + '/labels/').push(add);
-      });
     });
   }
 
@@ -202,16 +163,9 @@ export class ChecklistPage {
   doDeleteChecklist() {
     this.checklistSubscription.unsubscribe();
     this.itemsSubscription.unsubscribe();
-    this.updateDatabaseWithLabels(null);
-    if(this.itemKVPairs) {
-      Object.keys(this.itemKVPairs).forEach( key => {
-        console.log('Deleting ', this.itemKVPairs[key]);
-        this.doDeleteItem(key);
-      });
-    }
     console.log('Deleting checklist' + this.navParams.get('key'));
-    this.database.object('/checklists/' + this.navParams.get('key')).remove();
-    this.navCtrl.pop();
+    this.databaseService.deleteChecklist(this.navParams.get('key'));
+    this.navCtrl.goToRoot({});
     const toast = this.toastCtrl.create({
       message: 'Checklist successfully deleted',
       duration: 3000
@@ -225,7 +179,7 @@ export class ChecklistPage {
       let newContent = this.itemsFormArray['controls'][key].value;
       let newChecked = this.itemsFormArray['controls'][key+count].value;
       if(newChecked === null) { newChecked = false; }
-      this.database.object('/items/'+key).update({
+      this.databaseService.updateItem(key, {
         content: newContent,
         checked: newChecked
       });
@@ -262,11 +216,7 @@ export class ChecklistPage {
   }
 
   doDeleteItem(itemKey) {
-    this.database.object('/checklists/'+ this.navParams.get('key') +'/itemIDs').valueChanges().take(1).subscribe(itemIDs => {
-      var itemIDKey = Object.keys(itemIDs).find(key => itemIDs[key] === itemKey);
-      this.database.object('/items/' + itemKey).remove(); // remove item
-      this.database.object('/checklists/' + this.navParams.get('key') + '/itemIDs/' + itemIDKey).remove(); // remove item reference
-    });
+    this.databaseService.deleteItemFromChecklist(itemKey, this.navParams.get('key'), true);
     const toast = this.toastCtrl.create({
       message: 'Item successfully deleted',
       duration: 3000

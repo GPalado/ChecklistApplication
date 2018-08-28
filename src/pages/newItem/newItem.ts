@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
-import {Validators, FormBuilder, FormGroup} from '@angular/forms';
+import { AngularFireList } from 'angularfire2/database';
+import {Validators, FormBuilder } from '@angular/forms';
+import { DatabaseService } from '../../app/database.service';
 
 @Component({
   selector: 'page-newItem',
@@ -16,9 +17,9 @@ export class NewItemPage {
     content: ['', Validators.compose([Validators.maxLength(this.maxChars), Validators.required])]
   });
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, database: AngularFireDatabase, public formBuilder: FormBuilder, public toastCtrl: ToastController) { 
-    this.items = database.list('/items');
-    this.itemIDs = database.list('/checklists/' + this.navParams.get('checklistKey') + '/itemIDs');
+  constructor(public navCtrl: NavController, public navParams: NavParams, databaseService: DatabaseService, public formBuilder: FormBuilder, public toastCtrl: ToastController) { 
+    this.items = databaseService.getItemsList();
+    this.itemIDs = databaseService.getChecklistItemIDsList(this.navParams.get('checklistKey'));
     console.log(this.navParams.get('checklistKey'));
   }
 

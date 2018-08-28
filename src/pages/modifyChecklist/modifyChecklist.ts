@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { AngularFireList } from 'angularfire2/database';
 import {Validators, FormBuilder} from '@angular/forms';
 import { ChooseLabelsPage } from '../chooseLabels/chooseLabels';
+import { DatabaseService } from '../../app/database.service';
 
 @IonicPage()
 @Component({
@@ -23,9 +24,9 @@ export class ModifyChecklistPage {
   pageName;
 
 
-  constructor(public navCtrl: NavController, public navParams : NavParams, public database: AngularFireDatabase, public formBuilder: FormBuilder) { 
+  constructor(public navCtrl: NavController, public navParams : NavParams, public databaseService: DatabaseService, public formBuilder: FormBuilder) { 
     this.pageName = navParams.get('pageName');
-    this.checklists = database.list('/checklists');
+    this.checklists = databaseService.getChecklistsList();
     this.submit = navParams.get('submit');
     var existingInfo = navParams.get('existingInfo');
     if(existingInfo !== undefined) {
@@ -43,7 +44,7 @@ export class ModifyChecklistPage {
       this.labelKeys = labelData;
       this.labels = [];
       Object.keys(labelData).map(key => labelData[key]).forEach (labelKey => {
-        this.database.object('/labels/' + labelKey).valueChanges().take(1).subscribe(labelData => {
+        this.databaseService.getLabel(labelKey).take(1).subscribe(labelData => {
           this.labels.push(labelData);
         });
       });

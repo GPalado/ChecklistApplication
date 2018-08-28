@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController, ToastController } from 'ionic-angular';
-import { SettingsPage } from '../settings/settings';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { AngularFireList } from 'angularfire2/database';
 import { ChecklistPage } from '../checklist/checklist';
+import { FilterSettingsPage } from '../filterSettings/filterSettings';
 import { FormControl } from '../../../node_modules/@angular/forms';
 import { ModifyChecklistPage } from '../modifyChecklist/modifyChecklist';
+import { DatabaseService } from '../../app/database.service';
 
 @Component({
   selector: 'page-home',
@@ -16,8 +17,8 @@ export class HomePage {
   labelData;
   filterData;
 
-  constructor(public navCtrl: NavController, public database: AngularFireDatabase, public toastCtrl: ToastController) {
-    this.database.object('/labels').valueChanges().subscribe( labelData => {
+  constructor(public navCtrl: NavController, public databaseService: DatabaseService, public toastCtrl: ToastController) {
+    databaseService.getLabelsObj().subscribe( labelData => {
       console.log('labels update', labelData);
       if(labelData){
         this.labelData = labelData;
@@ -27,11 +28,11 @@ export class HomePage {
         });
       }
     });
-    this.database.object('/filters').valueChanges().subscribe(filterData => {
+    databaseService.getFiltersObj().subscribe(filterData => {
       this.filterData = filterData;
       console.log('filters update', filterData);
     });
-    this.database.object('/checklists').valueChanges().subscribe(checklistData => {
+    databaseService.getChecklistsObj().subscribe(checklistData => {
       console.log('checklists update', checklistData);
       this.checklists = {};
       this.updateFilters(checklistData);
@@ -70,20 +71,22 @@ export class HomePage {
   }
 
   getChecklists(checklistData, keys : String[], all : boolean){
-    for(let checklistKey of Object.keys(checklistData)){
-      if(all || keys.includes(checklistKey)) {
-        this.checklists[checklistKey] = checklistData[checklistKey];
+    if(checklistData) {
+      for(let checklistKey of Object.keys(checklistData)){
+        if(all || keys.includes(checklistKey)) {
+          this.checklists[checklistKey] = checklistData[checklistKey];
+        }
       }
+      console.log('checklists', this.checklists);
     }
-    console.log('checklists', this.checklists);
   }
 
   public getLabelFor(key) : string {
     return this.labelNames[key]['name'];
   }
 
-  goToSettings() {
-    this.navCtrl.push(SettingsPage);
+  goToFilterSettings() {
+    this.navCtrl.push(FilterSettingsPage);
   }
 
   addNewChecklist() {
@@ -97,11 +100,11 @@ export class HomePage {
         description: descrip
       });
       if(labels){
-        var checklistLabels : AngularFireList<any> = this.database.list('/checklists/' + newChecklistRef.key + '/labels');
+        var checklistLabels : AngularFireList<any> = this.databaseService.getChecklistLabelIDsList(newChecklistRef.key);
         var key;
         for(key in Object.keys(labels)) {
           checklistLabels.push(labels[key]);
-          var labelChecklists : AngularFireList<any> = this.database.list('/labels/' + labels[key] + '/checklists');
+          var labelChecklists : AngularFireList<any> = this.databaseService.getLabelChecklistIDsList(labels[key]);
           labelChecklists.push(newChecklistRef.key);
         }
       }
@@ -115,7 +118,7 @@ export class HomePage {
     
     this.navCtrl.push(ModifyChecklistPage, {
       pageName: 'New Checklist',
-      submit: (formControl, labels) => submit(formControl, this.database.list('/checklists'), labels)
+      submit: (formControl, labels) => submit(formControl, this.databaseService.getChecklistsList(), labels)
     });
   }
 

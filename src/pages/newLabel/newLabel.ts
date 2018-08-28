@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController } from 'ionic-angular';
 import {Validators, FormBuilder} from '@angular/forms';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { AngularFireList } from 'angularfire2/database';
+import { DatabaseService } from '../../app/database.service';
 
 @Component({
   selector: 'page-newLabel',
@@ -16,8 +17,8 @@ export class NewLabelPage {
     labelCheckboxes: ['', Validators.compose([Validators.required])]
   });
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public formBuilder: FormBuilder, public database: AngularFireDatabase, public toastCtrl: ToastController) { 
-    this.labels = database.list('/labels');
+  constructor(public navCtrl: NavController, public navParams: NavParams, public formBuilder: FormBuilder, public databaseService: DatabaseService, public toastCtrl: ToastController) { 
+    this.labels = databaseService.getLabelsList();
   }
 
   save() {
